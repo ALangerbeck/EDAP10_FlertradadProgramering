@@ -7,6 +7,7 @@ class display_update extends Thread {
     display_update(ClockOutput clock_out, Monitor monitor) {
         this.clock_out = clock_out;
         this.monitor = monitor;
+
     }
 
     @Override
@@ -22,7 +23,7 @@ class display_update extends Thread {
                 Thread.sleep(1000 - (delta - 1000 * increments));
                 increments++;
 
-                clock_time = monitor.increment_current_time(1000);
+                clock_time = monitor.increment_current_time();
 
                 if (monitor.check_alarm() && clock_time == monitor.alarm_time()) {
                     alarm_thread alarm_thread = new alarm_thread(clock_out, monitor);
