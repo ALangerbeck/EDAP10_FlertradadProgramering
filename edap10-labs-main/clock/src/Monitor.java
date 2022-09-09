@@ -30,7 +30,7 @@ public class Monitor {
         if (current_s == 0) {
             current_m = (current_m + 1) % 60;
             if (current_m == 0) {
-                current_h = (current_h + 1) % 99;
+                current_h = (current_h + 1) % 24;
             }
         }
         long return_time = current_h * 3600000 + current_m * 60000 + current_s * 1000;
