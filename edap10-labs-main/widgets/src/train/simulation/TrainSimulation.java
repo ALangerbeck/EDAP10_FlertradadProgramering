@@ -8,8 +8,9 @@ import train.model.Route;
 import train.model.Segment;
 import train.view.TrainView;
 
-public class TrainSimulation {
 
+public class TrainSimulation {
+    static int TRAIN_LENGHT = 3;
     public static void main(String[] args) {
 
         TrainView view = new TrainView();
@@ -29,7 +30,7 @@ public class TrainSimulation {
         Route route = view.loadRoute();
         // inti train
         LinkedList<Segment> train1 = new LinkedList<Segment>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < TRAIN_LENGHT; i++) {
             train1.addFirst(route.next());
             train1.peek().enter();
         }
