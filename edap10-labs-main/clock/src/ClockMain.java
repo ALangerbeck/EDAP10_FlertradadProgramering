@@ -6,6 +6,7 @@ import clock.io.ClockOutput;
 public class ClockMain {
 
     public static void main(String[] args) throws InterruptedException {
+        final boolean DEBUG = false;
         AlarmClockEmulator emulator = new AlarmClockEmulator();
         Monitor monitor = new Monitor();
 
@@ -27,7 +28,6 @@ public class ClockMain {
             int h = userInput.getHours();
             int m = userInput.getMinutes();
             int s = userInput.getSeconds();
-
             switch (choice) {
                 case 1:
                     monitor.set_current_time(h, m, s);
@@ -40,8 +40,9 @@ public class ClockMain {
                     break;
 
             }
-
-            System.out.println("choice=" + choice + " h=" + h + " m=" + m + " s=" + s);
+            if (DEBUG) {
+                System.out.println("choice=" + choice + " h=" + h + " m=" + m + " s=" + s);
+            }
         }
     }
 
