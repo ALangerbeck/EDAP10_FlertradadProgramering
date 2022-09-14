@@ -1,10 +1,6 @@
 package train.simulation;
 
 import java.util.LinkedList;
-
-import javax.swing.plaf.basic.BasicTreeUI.TreeCancelEditingAction;
-import javax.swing.text.View;
-
 import train.model.Route;
 import train.model.Segment;
 import train.view.TrainView;
@@ -16,8 +12,6 @@ public class TrainSimulation {
 
         TrainView view = new TrainView();
         train_monitor monitor = new train_monitor();
-        // for (int i = 0; i<3;i++){
-
         Thread[] trains = new Thread[20];
         for (int i = 0; i < 20; i++) {
             trains[i] = new Thread(() -> run_train(view, monitor));
