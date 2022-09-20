@@ -6,7 +6,7 @@ public class lift_main {
         final int NBR_FLOORS = 7, MAX_PASSENGERS = 4;
 
         LiftView  view = new LiftView(NBR_FLOORS, MAX_PASSENGERS);
-        monitor_lift monitor = new monitor_lift(view, NBR_FLOORS);
+        monitor_lift monitor = new monitor_lift(view, NBR_FLOORS, MAX_PASSENGERS);
         //Passenger pass = view.createPassenger();
         //int  fromFloor = pass.getStartFloor();
         //int    toFloor = pass.getDestinationFloor();
@@ -16,6 +16,7 @@ public class lift_main {
 
         thread_passenger passenger = new thread_passenger(view,monitor);
         passenger.start();
+     
         
         /* 
         if (fromFloor != 0) {
