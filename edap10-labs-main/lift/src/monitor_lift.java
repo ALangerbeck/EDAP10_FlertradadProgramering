@@ -10,6 +10,9 @@ public class monitor_lift {
     private boolean doors_open; 
     private int MAX_PASSENGERS;
     private int NBR_FLOORS;
+    private int entering = 0;
+    private int exiting = 0;
+
  
     public monitor_lift(LiftView view,int NBR_FLOORS,int max_passenger){
         this.NBR_FLOORS = NBR_FLOORS;
@@ -25,30 +28,37 @@ public class monitor_lift {
         while(!(current_floor == pass.getStartFloor() && doors_open) || sum_array(to_exit) == MAX_PASSENGERS){
             wait();
         }
-        pass.enterLift();
+        entering++;
         to_exit[pass.getDestinationFloor()]++;
+    }
+
+
+    public synchronized void signal_entered(Passenger pass){
         to_enter[pass.getStartFloor()]--;
+        entering--;
         notifyAll();
     }
 
     public synchronized void wait_to_leave(Passenger pass) throws InterruptedException{
-
         while(!(current_floor == pass.getDestinationFloor() && doors_open)){
             wait();
         }
         to_exit[pass.getDestinationFloor()]--;
-        pass.exitLift();
+        exiting++;
+    }
+    public synchronized void signal_leave(Passenger pass){  
+        exiting--;
         notifyAll();
     }
 
     public synchronized void open_for_passengers(int floor) throws InterruptedException{
         current_floor = floor;
-        if((to_enter[floor] != 0 && MAX_PASSENGERS != sum_array(to_exit)) || to_exit[floor] != 0 /*&& number_in_lift < MAX_PASSENGERS*/){
+        if((to_enter[floor] != 0 && MAX_PASSENGERS != (sum_array(to_exit))) || to_exit[floor] != 0 || entering != 0 || exiting != 0){
             view.openDoors(floor);
             doors_open = true;
             notifyAll();
         }
-        while((to_enter[floor] != 0 && MAX_PASSENGERS != sum_array(to_exit)) || to_exit[floor] != 0 /* && number_in_lift < MAX_PASSENGERS*/){
+        while((to_enter[floor] != 0 && MAX_PASSENGERS != sum_array(to_exit)) || to_exit[floor] != 0 || entering != 0 || exiting != 0){
             wait();
         }
         if(doors_open){

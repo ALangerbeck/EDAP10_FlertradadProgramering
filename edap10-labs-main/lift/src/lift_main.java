@@ -2,7 +2,7 @@ import lift.LiftView;
 
 public class lift_main {
     public static void main(String[] args) {
-        final int NBR_FLOORS = 7, MAX_PASSENGERS = 4, NBR_PASSENGERS = 20;
+        final int NBR_FLOORS = 10, MAX_PASSENGERS = 5, NBR_PASSENGERS = 20;
 
         LiftView  view = new LiftView(NBR_FLOORS, MAX_PASSENGERS);
         monitor_lift monitor = new monitor_lift(view, NBR_FLOORS, MAX_PASSENGERS);

@@ -1,7 +1,4 @@
 import lift.Passenger;
-
-import javax.swing.text.View;
-
 import lift.LiftView;
 
 public class thread_passenger extends Thread {
@@ -20,7 +17,11 @@ public class thread_passenger extends Thread {
                 Passenger passenger = view.createPassenger();
                 passenger.begin();
                 monitor.wait_for_lift(passenger);
+                passenger.enterLift();
+                monitor.signal_entered(passenger);
                 monitor.wait_to_leave(passenger);
+                passenger.exitLift();
+                monitor.signal_leave(passenger);
                 passenger.end();
             }
         }
