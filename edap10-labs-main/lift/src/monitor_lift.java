@@ -9,43 +9,46 @@ public class monitor_lift {
     private  int current_floor;
     private boolean doors_open; 
     private int MAX_PASSENGERS;
-    private int number_in_lift = 0;
+    private int NBR_FLOORS;
  
     public monitor_lift(LiftView view,int NBR_FLOORS,int max_passenger){
+        this.NBR_FLOORS = NBR_FLOORS;
         to_enter = new int[NBR_FLOORS];
         to_exit = new int[NBR_FLOORS];
         this.view = view;
         this.MAX_PASSENGERS = max_passenger;
-
-
     }
 
     public synchronized void wait_for_lift(Passenger pass) throws InterruptedException{
+        notifyAll();
         to_enter[pass.getStartFloor()]++;
-        while(current_floor != pass.getStartFloor() && !doors_open/*|| number_in_lift == MAX_PASSENGERS*/){
+        while(!(current_floor == pass.getStartFloor() && doors_open) || sum_array(to_exit) == MAX_PASSENGERS){
             wait();
         }
         pass.enterLift();
-        number_in_lift++;
         to_exit[pass.getDestinationFloor()]++;
         to_enter[pass.getStartFloor()]--;
         notifyAll();
     }
 
     public synchronized void wait_to_leave(Passenger pass) throws InterruptedException{
-        while(true){
+
+        while(!(current_floor == pass.getDestinationFloor() && doors_open)){
             wait();
         }
+        to_exit[pass.getDestinationFloor()]--;
+        pass.exitLift();
+        notifyAll();
     }
 
     public synchronized void open_for_passengers(int floor) throws InterruptedException{
-        if(to_enter[floor] != 0 /*&& number_in_lift < MAX_PASSENGERS*/){
+        current_floor = floor;
+        if((to_enter[floor] != 0 && MAX_PASSENGERS != sum_array(to_exit)) || to_exit[floor] != 0 /*&& number_in_lift < MAX_PASSENGERS*/){
             view.openDoors(floor);
             doors_open = true;
-            current_floor = floor;
             notifyAll();
         }
-        while(to_enter[floor] != 0 /* && number_in_lift < MAX_PASSENGERS*/){
+        while((to_enter[floor] != 0 && MAX_PASSENGERS != sum_array(to_exit)) || to_exit[floor] != 0 /* && number_in_lift < MAX_PASSENGERS*/){
             wait();
         }
         if(doors_open){
@@ -54,5 +57,17 @@ public class monitor_lift {
         }
     }
 
-        
+    public synchronized void wait_for_passenger() throws InterruptedException{
+        while(sum_array(to_enter) + sum_array(to_exit) == 0){
+            wait();
+        }
+    }
+
+    private int sum_array(int[] array){
+        int sum = 0;
+        for(int i = 0;i < NBR_FLOORS;i++ ){
+            sum += array[i];
+        }
+        return sum;
+    }    
 }

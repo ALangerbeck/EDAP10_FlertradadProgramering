@@ -6,20 +6,22 @@ import lift.LiftView;
 
 public class thread_passenger extends Thread {
 
-    private Passenger passenger;
+    private LiftView view;
     private monitor_lift monitor;
     public thread_passenger(LiftView view,monitor_lift monitor){
-        this.passenger = view.createPassenger();
+        this.view = view;
         this.monitor = monitor;
     }
 
     @Override
     public void run(){
         try{
-                while(true){
+            while(true){
+                Passenger passenger = view.createPassenger();
                 passenger.begin();
                 monitor.wait_for_lift(passenger);
                 monitor.wait_to_leave(passenger);
+                passenger.end();
             }
         }
         catch(InterruptedException e){

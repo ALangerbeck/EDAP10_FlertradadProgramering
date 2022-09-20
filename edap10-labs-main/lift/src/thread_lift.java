@@ -19,6 +19,7 @@ public class thread_lift extends Thread{
             int current_floor = 0;
             boolean going_up = true;
             while(true){
+                monitor.wait_for_passenger();
                 if (going_up){
                     to_floor++;
                 }else{
