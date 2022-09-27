@@ -1,10 +1,13 @@
 import java.math.BigInteger;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 
 import client.view.StatusWindow;
+import client.view.WorklistItem;
 import network.Sniffer;
 import network.SnifferCallback;
 
@@ -48,5 +51,12 @@ public class CodeBreaker implements SnifferCallback {
     @Override
     public void onMessageIntercepted(String message, BigInteger n) {
         System.out.println("message intercepted (N=" + n + ")...");
+        SwingUtilities.invokeLater(() -> {
+            WorklistItem item = new WorklistItem(n, message);
+            workList.add(item);
+            JButton btn = new JButton("Break");
+            workList.add(btn);
+        });
+
     }
 }
