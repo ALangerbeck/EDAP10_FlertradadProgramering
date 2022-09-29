@@ -102,6 +102,16 @@ public class CodeBreaker implements SnifferCallback {
                             tracker.cancel_progress();
                             prog_aight.remove(cancel_btn);
 
+                            JButton delete_btn = new JButton("Delete");
+                            delete_btn.addActionListener(x -> {
+                                progressList.remove(prog_aight);
+                                SwingUtilities.invokeLater(() -> {
+                                    mainProgressBar.setValue(mainProgressBar.getValue() - 1000000);
+                                    mainProgressBar.setMaximum(mainProgressBar.getMaximum() - 1000000);
+                                });
+                            });
+                            prog_aight.add(delete_btn);
+
                         });
                         prog_aight.add(cancel_btn);
                     });
