@@ -65,21 +65,21 @@ public class CodeBreaker implements SnifferCallback {
                 SwingUtilities.invokeLater(() -> {
                     workList.remove(item);
                     progressList.add(prog_aight);
-                    ProgressTracker tracker = new Tracker(prog_aight);
+                    ProgressTracker tracker = new Tracker(prog_aight, mainProgressBar);
+                    int maximum = mainProgressBar.getMaximum();
+                    mainProgressBar.setMaximum(maximum + 1000000);
 
                     Runnable task = () -> {
                         try {
-                            SwingUtilities.invokeLater(() -> {
-                                int progress = mainProgressBar.getValue();
-                                int maximum = mainProgressBar.getMaximum();
-                                mainProgressBar.setMaximum(maximum + 1000000);
-                                mainProgressBar.setValue(maximum + 1000000);
-                            });
                             String plaintext = Factorizer.crack(message, n, tracker);
                             SwingUtilities.invokeLater(() -> {
                                 JButton delete_btn = new JButton("Delete");
                                 delete_btn.addActionListener(x -> {
                                     progressList.remove(prog_aight);
+                                    SwingUtilities.invokeLater(() -> {
+                                        mainProgressBar.setValue(mainProgressBar.getValue() - 1000000);
+                                        mainProgressBar.setMaximum(mainProgressBar.getMaximum() - 1000000);
+                                    });
                                 });
                                 prog_aight.getTextArea().setText(plaintext);
                                 prog_aight.add(delete_btn);
@@ -100,9 +100,11 @@ public class CodeBreaker implements SnifferCallback {
     private static class Tracker implements ProgressTracker {
         private int totalProgress = 0;
         private ProgressItem prog_item;
+        private JProgressBar mainProgressBar;
 
-        public Tracker(ProgressItem aight) {
+        public Tracker(ProgressItem aight, JProgressBar mainProgressBar) {
             prog_item = aight;
+            this.mainProgressBar = mainProgressBar;
         }
 
         /**
@@ -116,9 +118,11 @@ public class CodeBreaker implements SnifferCallback {
         public void onProgress(int ppmDelta) {
             totalProgress += ppmDelta;
             SwingUtilities.invokeLater(() -> {
+                int progress = mainProgressBar.getValue();
                 prog_item.getProgressBar().setValue(totalProgress);
+                mainProgressBar.setValue(progress + ppmDelta);
             });
-            System.out.println("progress = " + totalProgress + "/1000000");
+            // System.out.println("progress = " + totalProgress + "/1000000");
         }
     }
 }
