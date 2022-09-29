@@ -1,6 +1,7 @@
 import java.math.BigInteger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -32,6 +33,7 @@ public class CodeBreaker implements SnifferCallback {
         workList = w.getWorkList();
         progressList = w.getProgressList();
         mainProgressBar = w.getProgressBar();
+        w.enableErrorChecks();
     }
 
     // -----------------------------------------------------------------------
@@ -56,7 +58,7 @@ public class CodeBreaker implements SnifferCallback {
     /** Called by a Sniffer thread when an encrypted message is obtained. */
     @Override
     public void onMessageIntercepted(String message, BigInteger n) {
-        System.out.println("message intercepted (N=" + n + ")...");
+        // System.out.println("message intercepted (N=" + n + ")...");
         SwingUtilities.invokeLater(() -> {
             WorklistItem item = new WorklistItem(n, message);
             ProgressItem prog_aight = new ProgressItem(n, message);
@@ -65,14 +67,17 @@ public class CodeBreaker implements SnifferCallback {
                 SwingUtilities.invokeLater(() -> {
                     workList.remove(item);
                     progressList.add(prog_aight);
-                    ProgressTracker tracker = new Tracker(prog_aight, mainProgressBar);
+
+                    Tracker tracker = new Tracker(prog_aight, mainProgressBar);
                     int maximum = mainProgressBar.getMaximum();
                     mainProgressBar.setMaximum(maximum + 1000000);
+                    JButton cancel_btn = new JButton("Cancel");
 
                     Runnable task = () -> {
                         try {
                             String plaintext = Factorizer.crack(message, n, tracker);
                             SwingUtilities.invokeLater(() -> {
+                                prog_aight.remove(cancel_btn);
                                 JButton delete_btn = new JButton("Delete");
                                 delete_btn.addActionListener(x -> {
                                     progressList.remove(prog_aight);
@@ -87,9 +92,19 @@ public class CodeBreaker implements SnifferCallback {
                         } catch (InterruptedException ex) {
                             throw new Error(ex);
                         }
-
                     };
-                    pool.submit(task);
+
+                    Future<?> future = pool.submit(task);
+                    SwingUtilities.invokeLater(() -> {
+                        cancel_btn.addActionListener(a -> {
+                            future.cancel(true);
+                            prog_aight.getTextArea().setText("[CANCELLED]");
+                            tracker.cancel_progress();
+                            prog_aight.remove(cancel_btn);
+
+                        });
+                        prog_aight.add(cancel_btn);
+                    });
                 });
             });
             workList.add(item);
@@ -116,13 +131,24 @@ public class CodeBreaker implements SnifferCallback {
          */
         @Override
         public void onProgress(int ppmDelta) {
-            totalProgress += ppmDelta;
+            int ppmDeltaActual = Math.min((ppmDelta), 1000000 - prog_item.getProgressBar().getValue());
+            totalProgress += ppmDeltaActual;
             SwingUtilities.invokeLater(() -> {
                 int progress = mainProgressBar.getValue();
                 prog_item.getProgressBar().setValue(totalProgress);
-                mainProgressBar.setValue(progress + ppmDelta);
+                mainProgressBar.setValue(progress + ppmDeltaActual);
             });
             // System.out.println("progress = " + totalProgress + "/1000000");
+        }
+
+        public void cancel_progress() {
+            SwingUtilities.invokeLater(() -> {
+                prog_item.getProgressBar().setValue(1000000);
+                int progress = mainProgressBar.getValue();
+                int remaining_progress = 1000000 - totalProgress;
+                mainProgressBar.setValue(progress + remaining_progress);
+            });
+
         }
     }
 }
