@@ -14,14 +14,14 @@ import static wash.control.WashingMessage.Order.*;
  * 
  * It can be used after an emergency stop (program 0) or a power failure.
  */
-public class WashingProgram1 extends ActorThread<WashingMessage> {
+public class WashingProgram2 extends ActorThread<WashingMessage> {
 
     private WashingIO io;
     private ActorThread<WashingMessage> temp;
     private ActorThread<WashingMessage> water;
     private ActorThread<WashingMessage> spin;
 
-    public WashingProgram1(WashingIO io,
+    public WashingProgram2(WashingIO io,
             ActorThread<WashingMessage> temp,
             ActorThread<WashingMessage> water,
             ActorThread<WashingMessage> spin) {
@@ -38,10 +38,33 @@ public class WashingProgram1 extends ActorThread<WashingMessage> {
             // Lock the hatch
             io.lock(true);
 
+            // Pre-wash
             water.send(new WashingMessage(this, WATER_FILL));
             receive();
 
             temp.send(new WashingMessage(this, TEMP_SET_40));
+            receive();
+
+            spin.send(new WashingMessage(this, SPIN_SLOW));
+            receive();
+
+            Thread.sleep((20 * 60000) / Settings.SPEEDUP);
+
+            spin.send(new WashingMessage(this, SPIN_OFF));
+            receive();
+
+            temp.send(new WashingMessage(this, TEMP_IDLE));
+            receive();
+
+            water.send(new WashingMessage(this, WATER_DRAIN));
+            receive();
+
+            // Main wash
+
+            water.send(new WashingMessage(this, WATER_FILL));
+            receive();
+
+            temp.send(new WashingMessage(this, TEMP_SET_60));
             receive();
 
             spin.send(new WashingMessage(this, SPIN_SLOW));
@@ -85,7 +108,7 @@ public class WashingProgram1 extends ActorThread<WashingMessage> {
             // Now that the barrel has stopped, it is safe to open the hatch.
             io.lock(false);
 
-            System.out.println("washing program 1 finished");
+            System.out.println("washing program 2 finished");
         } catch (InterruptedException e) {
 
             // If we end up here, it means the program was interrupt()'ed:

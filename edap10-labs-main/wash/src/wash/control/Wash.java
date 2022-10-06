@@ -16,6 +16,7 @@ public class Wash {
         SpinController spin = new SpinController(io);
 
         WashingProgram1 program1 = new WashingProgram1(io, temp, water, spin);
+        WashingProgram2 program2 = new WashingProgram2(io, temp, water, spin);
         WashingProgram3 program3 = new WashingProgram3(io, temp, water, spin);
 
         temp.start();
@@ -34,14 +35,21 @@ public class Wash {
                 case 0:
                     program1.interrupt();
                     program1.join();
+                    program2.interrupt();
+                    program2.join();
                     program3.interrupt();
                     program3.join();
+
+                    WashingProgram0 program0 = new WashingProgram0(io, temp, water, spin);
+                    program0.start();
                     break;
                 case 1:
                     program1 = new WashingProgram1(io, temp, water, spin);
                     program1.start();
                     break;
                 case 2:
+                    program2 = new WashingProgram2(io, temp, water, spin);
+                    program2.start();
                     break;
                 case 3:
                     program3 = new WashingProgram3(io, temp, water, spin);

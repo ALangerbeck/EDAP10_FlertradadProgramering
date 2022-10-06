@@ -57,12 +57,6 @@ public class SpinController extends ActorThread<WashingMessage> {
                             spinning_right = !spinning_right;
                             break;
                         }
-                    case SPIN_FAST:
-                        break;
-
-                    case SPIN_OFF:
-                        break;
-
                     default:
                         break;
 
