@@ -40,8 +40,8 @@ public class Wash {
                     program3.interrupt();
                     program3.join();
 
-                    WashingProgram0 program0 = new WashingProgram0(io, temp, water, spin);
-                    program0.start();
+                    // WashingProgram0 program0 = new WashingProgram0(io, temp, water, spin);
+                    // program0.start();
                     break;
                 case 1:
                     program1 = new WashingProgram1(io, temp, water, spin);
