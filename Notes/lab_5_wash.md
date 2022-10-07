@@ -4,7 +4,7 @@
 Main, Wasser ,Spin, Temperaturen, programmen (0-3).
 
 # R2. How do the threads communicate? Is there any shared data?
-Messages, IO, refrences to other threads
+Messages, IO, references to other threads
 
 # R3. For TemperatureController, we selected a period of 10 seconds. What could the downside of a too long or too short period be?
 The longer we sleep the bigger the temperature change, if we sleep to much we cant stay in the temp gap.
@@ -16,10 +16,10 @@ The longer we sleep the bigger the temperature change, if we sleep to much we ca
 yes, it is used to implement actor thread.
 
 # R6. How do you use Java’s interruption facility (interrupt(), InterruptedException)?
-We interupt the program thread, Interupted exception catch is used to do things when the program is interupted
+We interrupt the program thread, Interrupted exception catch is used to do things when the program is interupted
 
 # R7. How do you ensure that the machine never heats unless there is water in it?
-Before we heat we wait for acknolagment that there is water filled.
+Before we heat we wait for acknowledgment that there is water filled.
 
 # R8. Suppose a washing program ends by turning the heat off and draining the machine of water. The heat is turned off by sending a WashingMessage to TemperatureController. How can you ensure that the heat has indeed been turned off before the washing program continues (and starts the drain pump)?
 Wait for acknowledgment of heating is turned off.
